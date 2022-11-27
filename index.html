@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Browser speech recognition</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Browser speech recognition</h1>
+    </header>
+    <main>
+      <section class="button_section">
+          <button id="button">Start listening</button>
+      <!-- 追記1　ここから -->
+          <button id="button2">to Log</button>
+          <button id="button3">memo about Log</button>
+      </section>
+      <section class="result_section">
+      <!-- 追記1　ここまで -->
+        <div id="result"></div><span id="counter_section"></span>
+        <!-- 追記2　ここから -->
+        <div id="result2"></div>
+        <div id="result3"></div><span id="count"></span>
+      </section>
+      <!-- 追記2終　ここまで -->
+      <p id="message" hidden aria-hidden="true">
+        Your browser doesn't support Speech Recognition. Sorry.
+      </p>
+    </main>
+    <footer>
+      <p>Built with 🎙 by <a href="https://twitter.com/philnash">philnash</a></p>
+    </footer>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const button = document.getElementById("button");
+            const result = document.getElementById("result");
+            const main = document.getElementsByTagName("main")[0];
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+            if (typeof SpeechRecognition === "undefined") {
+                button.remove();
+                const message = document.getElementById("message");
+                message.removeAttribute("hidden");
+                message.setAttribute("aria-hidden", "false");
+              } else {
+                  let listening = false;
+                  const recognition = new SpeechRecognition();
+                  const start = () => {
+                      recognition.start();
+                      button.textContent = "Stop listening";
+                      main.classList.add("speaking");
+                  };
+                  const stop = () => {
+                      recognition.stop();
+                      button.textContent = "Start listening";
+                      main.classList.remove("speaking");
+                  };
+                  const onResult = event => {
+                      result.innerHTML = "";
+                      for (const res of event.results) {
+                          const text = document.createTextNode(res[0].transcript);
+                          const p = document.createElement("p");
+                          if (res.isFinal) {
+                              p.classList.add("final");
+                          }
+                          p.appendChild(text);
+                          result.appendChild(p);
+                      }
+                  };
+                  recognition.continuous = true;
+                  recognition.interimResults = true;
+                  recognition.addEventListener("result", onResult);
+                  button.addEventListener("click", () => {
+                      listening ? stop() : start();
+                      listening = !listening;
+                      //追記 start
+                      // const counter_section = document.getElementById("counter_section");
+                      // counter_section.innerHTML=listening;
+                      const count = document.getElementById("count");
+                      count.innerHTML="0";
+                      //追記 end
+                  });
+              }
+        });
+        //追記3　start
+        // 1.ログを一時的に記録しておく「a moment of log」のコード
+        const button2 = document.getElementById("button2");
+        button2.addEventListener("click",() => {
+        const log_tag = document.getElementById("result");
+        const result2 = document.getElementById("result2");
+        result2.innerHTML = log_tag.innerHTML;
+        });
+        // 2.1で一時的に記録したログを、自分のメモに移動する機能「my logging」
+        const button3 = document.getElementById("button3");
+        let i = 0;
+        button3.addEventListener("click",() => {
+        const memo_tag = document.getElementById("result2");
+        const result3 = document.getElementById("result3");
+        const count = document.getElementById("count");
+        i = parseInt(count.innerHTML, 10);
+        if(i===0){
+          // button3のメモを1行にまとめるコード start
+          const p = document.createElement("p");
+          p.innerHTML = memo_tag.innerHTML;
+          result3.appendChild(p);
+          // button3のメモを1行にまとめるコード end
+        }
+          // id count　のHTML(iの文字列となった数字)を読み取って、10進数の数値に戻す操作 start
+          i = parseInt(count.innerHTML, 10);
+          i += 1;
+          // id count　のHTML(iの文字列となった数字)を読み取って、10進数の数値に戻す操作　end
+          count.innerHTML=i;
+      });
+        //追記3 終
+    </script>
+    <!-- https://www.twilio.com/blog/speech-recognition-browser-web-speech-api-jp
+
+    Web Speech APIを利用しブラウザで音声を認識する方法 -->
+
+    <!-- 課題の起動方法など、わからないことございましたらメールでのやりとりをよろしくお願い致します。藤田 -->
+  </body>
+</html>

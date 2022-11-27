@@ -1,0 +1,10 @@
+< 引用させて頂いた「音声認識API」を扱っていたURL >
+
+https://www.twilio.com/blog/speech-recognition-browser-web-speech-api-jp
+
+Web Speech APIを利用しブラウザで音声を認識する方法
+
+< 起動方法 >
+index.html　と　style.css　を同じフォルダ内に配置し、index.htmlをダブルクリックしてください。
+
+上記お手数ですが、よろしくお願い致します。
